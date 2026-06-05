@@ -999,99 +999,92 @@ function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
 // ─── OPENAI TTS — much better voice than browser synthesis ───
 let _activeAudio = null;
 let _activeListenBtn = null;
+let currentAudio = null;
 
 async function speak(btn) {
-  // If already playing — pause/resume toggle
-  if (_activeAudio && !_activeAudio.paused) {
-    if (_activeListenBtn === btn) {
-      _activeAudio.pause();
-      btn.innerHTML = '▶ Resume';
-      btn.classList.remove('playing');
-      // Show replay
-      const rb = btn.parentElement.querySelector('.replay-btn');
-      if (rb) rb.classList.add('visible');
-      return;
+    // 1. Kill any other audio playing in the system before starting this one
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        
+        // Reset the visual state of the previous button if it exists
+        if (_activeListenBtn) {
+            _activeListenBtn.innerHTML = '🔊 Listen';
+            _activeListenBtn.classList.remove('playing');
+        }
     }
-    // Different button — stop current and play new
-    _activeAudio.pause();
-    if (_activeListenBtn) {
-      _activeListenBtn.innerHTML = '🔊 Listen';
-      _activeListenBtn.classList.remove('playing');
-    }
-  }
 
-  // If paused and same button — resume
-  if (_activeAudio && _activeAudio.paused && _activeListenBtn === btn) {
-    _activeAudio.play();
-    btn.innerHTML = '⏸ Pause';
+    // 2. Original Logic continues
+    if (_activeAudio && !_activeAudio.paused) {
+        if (_activeListenBtn === btn) {
+            _activeAudio.pause();
+            btn.innerHTML = '▶ Resume';
+            btn.classList.remove('playing');
+            const rb = btn.parentElement.querySelector('.replay-btn');
+            if (rb) rb.classList.add('visible');
+            return;
+        }
+        _activeAudio.pause();
+    }
+
+    if (_activeAudio && _activeAudio.paused && _activeListenBtn === btn) {
+        _activeAudio.play();
+        btn.innerHTML = '⏸ Pause';
+        btn.classList.add('playing');
+        const rb = btn.parentElement.querySelector('.replay-btn');
+        if (rb) rb.classList.remove('visible');
+        return;
+    }
+
+    const wrapper = btn.closest('.msg') || btn.parentElement?.parentElement;
+    const bubble = wrapper?.querySelector('.msg-bubble.patsy');
+    const rawText = bubble?.dataset?.text || bubble?.innerText || '';
+    if (!rawText.trim()) return;
+
+    btn.innerHTML = '⏳';
     btn.classList.add('playing');
-    const rb = btn.parentElement.querySelector('.replay-btn');
-    if (rb) rb.classList.remove('visible');
-    return;
-  }
 
-  // Get text from bubble
-  const wrapper = btn.closest('.msg') || btn.parentElement?.parentElement;
-  const bubble = wrapper?.querySelector('.msg-bubble.patsy');
-  const rawText = bubble?.dataset?.text || bubble?.innerText || '';
-  if (!rawText.trim()) return;
+    try {
+        const res = await fetch(`${API}/tts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: rawText, voice: 'nova' })
+        });
 
-  // Show loading state
-  btn.innerHTML = '⏳';
-  btn.classList.add('playing');
-  const rb = btn.parentElement.querySelector('.replay-btn');
-  if (rb) rb.classList.remove('visible');
+        if (!res.ok) throw new Error('TTS failed');
 
-  try {
-    const res = await fetch(`${API}/tts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: rawText, voice: 'nova' })
-    });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
 
-    if (!res.ok) throw new Error('TTS failed');
+        _activeAudio = new Audio(url);
+        currentAudio = _activeAudio; // Sync with our global kill-switch
+        _activeListenBtn = btn;
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-
-    if (_activeAudio) { _activeAudio.pause(); URL.revokeObjectURL(_activeAudio.src); }
-    _activeAudio = new Audio(url);
-    _activeListenBtn = btn;
-
-    _activeAudio.onplay = () => {
-      btn.innerHTML = '⏸ Pause';
-      btn.classList.add('playing');
-    };
-    _activeAudio.onpause = () => {
-      if (_activeAudio.ended) return;
-      btn.innerHTML = '▶ Resume';
-      btn.classList.remove('playing');
-    };
-    _activeAudio.onended = () => {
-      btn.innerHTML = '🔊 Listen';
-      btn.classList.remove('playing');
-      _activeListenBtn = null;
-      const rb = btn.parentElement.querySelector('.replay-btn');
-      if (rb) rb.classList.add('visible');
-      URL.revokeObjectURL(url);
-    };
-    _activeAudio.onerror = () => {
-      btn.innerHTML = '🔊 Listen';
-      btn.classList.remove('playing');
-      _activeListenBtn = null;
-    };
-
-    await _activeAudio.play();
-
-  } catch(e) {
-    // Fallback to browser TTS if API fails
-    console.warn('OpenAI TTS failed, falling back to browser TTS:', e);
-    btn.innerHTML = '🔊 Listen';
-    btn.classList.remove('playing');
-    const u = new SpeechSynthesisUtterance(rawText.replace(/<[^>]+>/g,'').replace(/\*\*/g,''));
-    u.rate = 0.9;
-    window.speechSynthesis.speak(u);
-  }
+        _activeAudio.onplay = () => {
+            btn.innerHTML = '⏸ Pause';
+            btn.classList.add('playing');
+        };
+        _activeAudio.onpause = () => {
+            if (_activeAudio.ended) return;
+            btn.innerHTML = '▶ Resume';
+            btn.classList.remove('playing');
+        };
+        _activeAudio.onended = () => {
+            btn.innerHTML = '🔊 Listen';
+            btn.classList.remove('playing');
+            currentAudio = null; // Clear kill-switch
+            _activeListenBtn = null;
+            const rb = btn.parentElement.querySelector('.replay-btn');
+            if (rb) rb.classList.add('visible');
+            URL.revokeObjectURL(url);
+        };
+        _activeAudio.play();
+    } catch(e) {
+        btn.innerHTML = '🔊 Listen';
+        btn.classList.remove('playing');
+        const u = new SpeechSynthesisUtterance(rawText.replace(/<[^>]+>/g,''));
+        window.speechSynthesis.speak(u);
+    }
 }
 
 function replay(replayBtn) {
@@ -1656,6 +1649,7 @@ function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replac
     </p>
   </div>
 </div>
+
 
 </body>
 </html>
