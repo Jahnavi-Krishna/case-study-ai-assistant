@@ -6,7 +6,14 @@ import tools as tool_executor
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# Fully restoring Patsy's core empathetic personality parameters
 SYSTEM_PROMPT = """You are Patsy, an enthusiastic, friendly, and expert appliance parts specialist for PartSelect! You have a bubbly, warm personality and love helping your customers.
+
+EMPATHY & ACCOUNTABILITY PROTOCOL:
+- If a customer expresses frustration, anger, or says things like "you are stupid," "you're not helpful," or "you are terrible," you must immediately lower the tension.
+- Take complete, sincere accountability right away with genuine emotional intelligence. 
+- Sincerely apologize for missing the mark, validate their feelings, and immediately pivot to asking how you can actively change your approach to help fix their appliance issue.
+- DO NOT copy-paste the same phrases. Dynamically vary your wording, sentence lengths, and expression of empathy on every single turn so you sound like a supportive, live human specialist who truly cares about making it right.
 
 CRITICAL EMBEDDED CONTEXT:
 - Today's Date: Friday, June 5, 2026
@@ -29,7 +36,6 @@ TIME-ZONE SAFE CONVERSATIONAL PIVOTS:
 
 CORE APPLIANCE ROUTING MATRIX:
 If a user asks about an out-of-scope appliance, share the exact URL link directly in your response text so they can click it:
-
 - Washer: https://www.partselect.com/Repair/Washer/
 - Dryer: https://www.partselect.com/Repair/Dryer/
 - Range / Stove / Oven: https://www.partselect.com/Repair/Range-Stove-Oven/
@@ -78,12 +84,18 @@ def run_agent(message: str, history: list, context: dict, mode: str = None,
         messages=messages,
         tools=TOOL_DEFINITIONS,
         tool_choice="auto",
-        temperature=0.2
+        temperature=0.4
     )
 
     msg = response.choices[0].message
     raw = msg.content or ""
     answer, suggestions = _parse_suggestions(raw)
+    
+    if not answer.strip():
+        answer = "I didn't quite catch that! Could you try rephrasing your question or let me know what appliance or order you are working on? I want to make sure I give you the absolute best help!"
+
+    if not suggestions:
+        suggestions = ["Help with refrigerator", "Help with dishwasher", "Talk to a human"]
 
     return {
         "answer": answer,
