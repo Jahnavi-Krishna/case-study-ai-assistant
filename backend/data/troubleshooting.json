@@ -1,0 +1,255 @@
+[
+  {
+    "id": "fridge-not-cooling",
+    "appliance": "refrigerator",
+    "symptom": "not cooling",
+    "keywords": [
+      "not cooling",
+      "warm",
+      "not cold",
+      "room temperature",
+      "fridge warm",
+      "refrigerator not working"
+    ],
+    "title": "Refrigerator Not Cooling",
+    "overview": "If your refrigerator isn't cooling properly, there are several common causes ranging from simple fixes to part replacements.",
+    "diagnosticQuestions": [
+      "Is the freezer still cold while the fridge section is warm?",
+      "Do you hear the compressor running (a low hum from the back)?",
+      "Is there heavy frost buildup on the freezer back wall?"
+    ],
+    "recommendedParts": [
+      "PS11751611",
+      "PS11748358",
+      "PS11723424"
+    ],
+    "followUpQuestions": {
+      "freezer cold fridge warm": "This strongly suggests the evaporator fan motor has failed. The freezer stays cold but cold air can't circulate into the fridge section.",
+      "heavy frost": "Heavy frost on the back freezer wall points to a failed defrost heater. The coils freeze over and block airflow.",
+      "clicking sound": "A clicking sound every few minutes is the classic sign of a failing compressor start relay. It's an easy and inexpensive fix."
+    },
+    "diagnosticSteps": [
+      "Check that the temperature settings are correct: fridge at 37\u00b0F, freezer at 0\u00b0F.",
+      "Make sure nothing is blocking the vents inside the fridge or freezer compartments.",
+      "Listen for the evaporator fan \u2014 open the freezer and listen for a running fan. If silent, the fan motor may have failed.",
+      "Check for heavy frost on the freezer back wall, which indicates a defrost heater issue.",
+      "Listen for a clicking sound from the back \u2014 this may indicate a failing compressor start relay."
+    ]
+  },
+  {
+    "id": "ice-maker-not-working",
+    "appliance": "refrigerator",
+    "symptom": "ice maker not working",
+    "keywords": [
+      "ice maker",
+      "no ice",
+      "ice maker stopped",
+      "not making ice",
+      "ice maker broken",
+      "ice machine"
+    ],
+    "title": "Ice Maker Not Working",
+    "overview": "Ice maker issues are one of the most common refrigerator repairs. The cause is usually the ice maker assembly itself, the water inlet valve, or a frozen water line.",
+    "diagnosticQuestions": [
+      "Is the water dispenser still working?",
+      "Can you hear the ice maker trying to cycle (a buzzing or clicking sound)?",
+      "Is the ice maker arm in the down position?"
+    ],
+    "recommendedParts": [
+      "PS11752063",
+      "PS11769249",
+      "PS11741372"
+    ],
+    "followUpQuestions": {
+      "water dispenser not working": "If both the ice maker and water dispenser are not working, the water inlet valve is almost certainly the cause.",
+      "arm down no ice": "If the arm is down and the unit cycles but produces no ice, replace the full ice maker assembly.",
+      "buzzing sound": "A buzzing sound without water filling indicates the water inlet valve solenoid is failing."
+    },
+    "diagnosticSteps": [
+      "Check that the ice maker arm is in the down (ON) position.",
+      "Test the water dispenser \u2014 if no water comes out, the water inlet valve may be faulty.",
+      "Check the water supply line at the back of the fridge for kinks or blockages.",
+      "Listen for the ice maker trying to cycle. If it buzzes but no water fills the mold, the valve is the issue.",
+      "If the arm is down and water fills but no ice drops, the ice maker assembly has likely failed."
+    ]
+  },
+  {
+    "id": "water-dispenser-not-working",
+    "appliance": "refrigerator",
+    "symptom": "water dispenser not working",
+    "keywords": [
+      "water dispenser",
+      "no water",
+      "water not coming out",
+      "dispenser broken",
+      "slow water"
+    ],
+    "title": "Water Dispenser Not Working",
+    "overview": "Water dispenser issues are typically caused by the water inlet valve, a clogged filter, or a frozen water line.",
+    "diagnosticQuestions": [
+      "When did you last replace the water filter?",
+      "Is the ice maker also not working?",
+      "Do you get a trickle of water or nothing at all?"
+    ],
+    "recommendedParts": [
+      "PS2378616",
+      "PS11769249"
+    ],
+    "followUpQuestions": {
+      "slow water": "A slow trickle usually means a clogged water filter. Replace it first \u2014 it's a 5-minute fix.",
+      "no water at all": "Complete loss of water with no filter issue points to the water inlet valve.",
+      "ice maker also broken": "If both are out, the water inlet valve is almost certainly the cause."
+    },
+    "diagnosticSteps": [
+      "Replace the water filter if it hasn't been changed in 6 months \u2014 a clogged filter is the #1 cause of slow water.",
+      "Check the water supply valve behind the refrigerator is fully open.",
+      "If the filter is new and water is still slow, bypass the filter temporarily to test.",
+      "If no water at all, the water inlet valve has likely failed.",
+      "Check for a frozen water line in the freezer door \u2014 use a hair dryer to thaw."
+    ]
+  },
+  {
+    "id": "dishwasher-not-draining",
+    "appliance": "dishwasher",
+    "symptom": "not draining",
+    "keywords": [
+      "not draining",
+      "standing water",
+      "water in bottom",
+      "water left after cycle",
+      "pooling water"
+    ],
+    "title": "Dishwasher Not Draining",
+    "overview": "Standing water after a cycle is one of the most common dishwasher problems. Usually caused by a clogged filter, blocked drain hose, or failed drain pump.",
+    "diagnosticQuestions": [
+      "How much water is left \u2014 a small puddle or several inches?",
+      "When did you last clean the filter?",
+      "Do you hear the drain pump running at the end of the cycle?"
+    ],
+    "recommendedParts": [
+      "PS11755072",
+      "PS11749769"
+    ],
+    "followUpQuestions": {
+      "filter clean still not draining": "If the filter is clean and the hose is clear, the drain pump has likely failed.",
+      "no pump sound": "If you don't hear the pump running at end of cycle, the pump motor has failed.",
+      "small puddle": "A small amount of water (under an inch) is normal \u2014 the sump holds a small reserve."
+    },
+    "diagnosticSteps": [
+      "Remove and clean the filter assembly \u2014 a clogged filter is the most common cause and takes 5 minutes to fix.",
+      "Check the drain hose at the back for kinks or clogs.",
+      "Check under the sink where the drain hose connects \u2014 ensure it's properly elevated (high loop) to prevent backflow.",
+      "Run the garbage disposal if connected \u2014 a clogged disposal can back water into the dishwasher.",
+      "If the pump runs but water remains, the drain pump may have a blockage or have failed."
+    ]
+  },
+  {
+    "id": "dishwasher-not-cleaning",
+    "appliance": "dishwasher",
+    "symptom": "dishes not clean",
+    "keywords": [
+      "dishes not clean",
+      "dirty dishes",
+      "food residue",
+      "not washing",
+      "not cleaning",
+      "spots on dishes"
+    ],
+    "title": "Dishwasher Not Cleaning Dishes",
+    "overview": "Poor cleaning is usually caused by clogged spray arms, a dirty filter, or low water temperature. Most fixes are quick and inexpensive.",
+    "diagnosticQuestions": [
+      "Are the top rack dishes clean but bottom rack dirty, or vice versa?",
+      "When did you last clean the filter?",
+      "Is there gritty residue or food particles on the dishes?"
+    ],
+    "recommendedParts": [
+      "PS11755072",
+      "PS11752994",
+      "PS11754281"
+    ],
+    "followUpQuestions": {
+      "top rack dirty": "If only the top rack is dirty, the upper spray arm is clogged or broken.",
+      "bottom rack dirty": "If only the bottom rack is dirty, check the lower spray arm and filter.",
+      "gritty residue": "Gritty residue means the filter needs cleaning \u2014 food particles are recirculating."
+    },
+    "diagnosticSteps": [
+      "Clean the filter \u2014 remove it, rinse under warm water, and use a soft brush to clear the mesh.",
+      "Check both spray arms for clogged holes \u2014 use a toothpick to clear debris.",
+      "Make sure dishes aren't blocking the spray arms from rotating.",
+      "Check your water temperature \u2014 it should be at least 120\u00b0F for effective cleaning.",
+      "Use a dishwasher cleaner (like Affresh) to remove internal buildup."
+    ]
+  },
+  {
+    "id": "dishwasher-leaking",
+    "appliance": "dishwasher",
+    "symptom": "leaking",
+    "keywords": [
+      "leaking",
+      "water on floor",
+      "puddle under dishwasher",
+      "water leak",
+      "leaks from door"
+    ],
+    "title": "Dishwasher Leaking",
+    "overview": "Dishwasher leaks typically come from the door gasket, a loose hose connection, or the door not latching properly.",
+    "diagnosticQuestions": [
+      "Where is the water coming from \u2014 from under the door or underneath the unit?",
+      "Does it leak only during certain cycles?",
+      "Is the door latch clicking shut firmly?"
+    ],
+    "recommendedParts": [
+      "PS11750553",
+      "PS11749767"
+    ],
+    "followUpQuestions": {
+      "leaks from door": "A leak from the door edge almost always means the door gasket needs replacing.",
+      "leaks from bottom": "A leak from underneath usually means a loose or cracked water inlet hose or pump seal.",
+      "door not latching": "A door that doesn't click shut means the door latch assembly needs replacing \u2014 the unit won't start properly either."
+    },
+    "diagnosticSteps": [
+      "Check the door gasket (seal around the door) for cracks, tears, or gaps.",
+      "Perform the dollar bill test: close the door on a dollar bill and try to pull it out. If it slides easily, the seal is worn.",
+      "Check that the door latch is closing firmly and the door is level.",
+      "Check under the dishwasher for loose or cracked hose connections.",
+      "Ensure you're using the correct amount of dishwasher detergent \u2014 too much causes excessive suds and leaks."
+    ]
+  },
+  {
+    "id": "dishwasher-not-starting",
+    "appliance": "dishwasher",
+    "symptom": "won't start",
+    "keywords": [
+      "won't start",
+      "not starting",
+      "no power",
+      "buttons not working",
+      "dead",
+      "no response"
+    ],
+    "title": "Dishwasher Won't Start",
+    "overview": "A dishwasher that won't start is usually caused by a door latch issue, thermal fuse, or control board problem.",
+    "diagnosticQuestions": [
+      "Are there any lights or display on the control panel?",
+      "Does the door click firmly when closed?",
+      "Did it stop working suddenly or gradually?"
+    ],
+    "recommendedParts": [
+      "PS11749767",
+      "PS11775678",
+      "PS11752995"
+    ],
+    "followUpQuestions": {
+      "no lights at all": "Complete loss of power with no display suggests a blown thermal fuse \u2014 it's a small, inexpensive part.",
+      "lights work won't cycle": "If the control panel lights up but cycles won't start, the door latch switch is the most likely cause.",
+      "stopped suddenly": "A sudden complete failure often means the thermal fuse has blown due to overheating."
+    },
+    "diagnosticSteps": [
+      "Check that the door is latching fully \u2014 the dishwasher won't start if the door switch isn't engaged.",
+      "Check the circuit breaker \u2014 reset it if tripped.",
+      "Press and hold the Start button for 3 seconds (some models require this).",
+      "If there is no power at all (no lights), the thermal fuse may have blown.",
+      "If lights work but cycles won't start, the door latch or control board may have failed."
+    ]
+  }
+]
