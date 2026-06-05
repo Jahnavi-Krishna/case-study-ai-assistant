@@ -1,0 +1,29 @@
+[
+  {
+    "id": "guide_returns",
+    "url": "https://www.partselect.com/returns",
+    "title": "PartSelect Returns Policy",
+    "type": "policy",
+    "part_numbers": [],
+    "model_numbers": [],
+    "content": "PartSelect offers a 365-day return policy. Parts must be returned in uninstalled, resalable condition in original packaging. To initiate a return, navigate to your order dashboard or use your order confirmation email."
+  },
+  {
+    "id": "guide_install_ps11752778",
+    "url": "https://www.partselect.com/install/PS11752778",
+    "title": "How to Install Dishwasher Heating Element PS11752778",
+    "type": "installation",
+    "part_numbers": ["PS11752778"],
+    "model_numbers": ["WDT780SAEM1"],
+    "content": "Step 1: Turn off power and water to the dishwasher. Step 2: Remove the lower access kickplate panel. Step 3: Use a wrench to loosen the nuts holding the element terminals. Step 4: Extract the old unit upward, place the replacement, and secure nuts tightly."
+  },
+  {
+    "id": "guide_troubleshoot_ice_maker",
+    "url": "https://www.partselect.com/troubleshooting/whirlpool-fridge-ice-maker",
+    "title": "Whirlpool Fridge Ice Maker Not Working",
+    "type": "troubleshooting",
+    "part_numbers": ["PS11752063"],
+    "model_numbers": ["WRF560SMHZ0"],
+    "content": "Common reasons a Whirlpool fridge ice maker stops working include water line freezes, a faulty inlet valve, or a broken motor module. Check if freezer temperatures are set below 0 degrees Fahrenheit. Inspect the water inlet valve for continuity."
+  }
+]

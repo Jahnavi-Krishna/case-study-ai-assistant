@@ -1,0 +1,32 @@
+[
+  {
+    "part_number": "PS11752778",
+    "name": "Dishwasher Heating Element",
+    "brand": "Whirlpool",
+    "category": "dishwasher",
+    "short_description": "Replaces worn or burnt heating element to restore drying.",
+    "symptoms": ["Dishes not drying", "No heat during drying cycle"],
+    "product_url": "https://www.partselect.com/PS11752778",
+    "image_url": "https://www.partselect.com/images/parts/PS11752778.jpg"
+  },
+  {
+    "part_number": "PS11752063",
+    "name": "Refrigerator Ice Maker Assembly",
+    "brand": "Whirlpool",
+    "category": "refrigerator",
+    "short_description": "Complete assembly including mold and rake to resolve ice-making failures.",
+    "symptoms": ["Not making ice", "Ice maker leaking"],
+    "product_url": "https://www.partselect.com/PS11752063",
+    "image_url": "https://www.partselect.com/images/parts/PS11752063.jpg"
+  },
+  {
+    "part_number": "PS11749769",
+    "name": "Dishwasher Drain Pump",
+    "brand": "Whirlpool",
+    "category": "dishwasher",
+    "short_description": "Pumps water out of the dishwasher tub.",
+    "symptoms": ["Not draining", "Leaking"],
+    "product_url": "https://www.partselect.com/PS11749769",
+    "image_url": "https://www.partselect.com/images/parts/PS11749769.jpg"
+  }
+]

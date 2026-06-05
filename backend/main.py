@@ -105,3 +105,24 @@ async def feedback(request: Request):
 @app.get("/health")
 def health():
     return {"status": "ok", "parts_loaded": len(rag.parts_lookup)}
+from pydantic import BaseModel
+from typing import Optional
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list
+    context: dict
+    imageBase64: Optional[str] = None
+    imageMime: Optional[str] = "image/jpeg"
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    # This passes the image data directly to your agent
+    result = run_agent(
+        message=request.message,
+        history=request.history,
+        context=request.context,
+        image_base64=request.imageBase64,
+        image_mime=request.imageMime
+    )
+    return result

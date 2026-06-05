@@ -1,0 +1,20 @@
+[
+  {
+    "part_number": "PS11752778",
+    "model_number": "WDT780SAEM1",
+    "compatible": true,
+    "notes": "OEM part for this Whirlpool dishwasher model."
+  },
+  {
+    "part_number": "PS11752778",
+    "model_number": "WRF560SMHZ0",
+    "compatible": false,
+    "notes": "Incompatible. This heating element is for dishwashers, not refrigerators."
+  },
+  {
+    "part_number": "PS11752063",
+    "model_number": "WRF560SMHZ0",
+    "compatible": true,
+    "notes": "OEM replacement assembly verified compatible with this refrigerator."
+  }
+]

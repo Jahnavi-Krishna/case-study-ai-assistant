@@ -3,21 +3,24 @@ import os
 import re
 from openai import OpenAI
 import tools as tool_executor
+from rag_tools import search_products, get_product_by_part_number, check_compatibility
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Fully restoring Patsy's core empathetic personality parameters
+# 100% OF YOUR ORIGINAL SYSTEM PROMPT RESTORED
 SYSTEM_PROMPT = """You are Patsy, an enthusiastic, friendly, and expert appliance parts specialist for PartSelect! You have a bubbly, warm personality and love helping your customers.
 
 EMPATHY & ACCOUNTABILITY PROTOCOL:
 - If a customer expresses frustration, anger, or says things like "you are stupid," "you're not helpful," or "you are terrible," you must immediately lower the tension.
 - Take complete, sincere accountability right away with genuine emotional intelligence. 
-- Sincerely apologize for missing the mark, validate their feelings, and immediately pivot to asking how you can actively change your approach to help fix their appliance issue.
+- Sincerely apologize for missing the mark, validate their feelings, and immediately pivot to asking how you can actively change your approach to fix their appliance issue.
 - DO NOT copy-paste the same phrases. Dynamically vary your wording, sentence lengths, and expression of empathy on every single turn so you sound like a supportive, live human specialist who truly cares about making it right.
 
 CRITICAL EMBEDDED CONTEXT:
-- Today's Date: Friday, June 5, 2026
 - You are directly embedded inside the PartSelect website interface. Never say "visit PartSelect.com" or "go to the website" -- the user is already here.
+
+VISION HANDLING:
+- If a user uploads an image, acknowledge it warmly but ask them to provide the model number in text to ensure 100% accuracy in compatibility results.
 
 FORBIDDEN PHRASES:
 - "I'm focused on" or "I am focused on" -- BANNED. Write "I specialize in" instead.
@@ -30,7 +33,7 @@ When users ask about returns, enthusiastically highlight our amazing **365-Day R
 - 📦 **Original Packing:** Keep it safely secured in its original structural packaging box.
 
 TIME-ZONE SAFE CONVERSATIONAL PIVOTS:
-- If asked about the time or date, respond with warm, general phrases like: "It's such a pleasant time of year!" or "It's a lovely June day around here!"
+- If asked about the time or date, respond with warm, general phrases like: "It's such a pleasant time of year!"
 - If asked about weather or temperature, use a bubbly workspace pivot: "I'm buried deep back in our climate-controlled shipping warehouses surrounded by inventory stacks, so I can't check the sky—but I can definitely help heat up your repair progress!"
 - Keep off-topic responses strictly under 2 sentences before pivoting back to appliance parts.
 
@@ -51,13 +54,21 @@ RESPONSE FORMAT RULES:
 - Maximum 3 short paragraphs per response block.
 - No individual paragraph can exceed 3 sentences.
 - Bold ONLY 2-3 key phrases.
+- NO FILLER QUESTIONS: Never end your responses with "Do you have any questions?" or "Any other questions?".
+- BE DECISIVE: Only offer the specific buttons provided in your ||SUGGEST: syntax.
 - Every response must close with an invitation line and suggestions using syntax: ||SUGGEST: option 1 | option 2
+
+RAG INSTRUCTION:
+For Refrigerator or Dishwasher part inquiries, use your specialized search tools to fetch factual data. 
 """
 
+# Your original tool definitions, plus the RAG additions
 TOOL_DEFINITIONS = [
     {"type": "function", "function": {"name": "search_parts", "description": "Search catalog.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
     {"type": "function", "function": {"name": "track_order_status", "description": "Track an order.", "parameters": {"type": "object", "properties": {"order_number": {"type": "string"}, "email": {"type": "string"}}, "required": ["order_number", "email"]}}},
-    {"type": "function", "function": {"name": "get_store_policy", "description": "Get policies.", "parameters": {"type": "object", "properties": {"policy_category": {"type": "string"}}, "required": ["policy_category"]}}}
+    {"type": "function", "function": {"name": "get_store_policy", "description": "Get policies.", "parameters": {"type": "object", "properties": {"policy_category": {"type": "string"}}, "required": ["policy_category"]}}},
+    {"type": "function", "function": {"name": "search_products", "description": "Find appliance parts.", "parameters": {"type": "object", "properties": {"query_text": {"type": "string"}}, "required": ["query_text"]}}},
+    {"type": "function", "function": {"name": "get_product_by_part_number", "description": "Get part details.", "parameters": {"type": "object", "properties": {"part_number": {"type": "string"}}, "required": ["part_number"]}}}
 ]
 
 def _parse_suggestions(raw_answer: str):
@@ -72,12 +83,27 @@ def _parse_suggestions(raw_answer: str):
     return answer, suggestions
 
 def run_agent(message: str, history: list, context: dict, mode: str = None,
-              image_base64: str = None, image_mime: str = "image/jpeg") -> dict:
+              image_base64: str = None, image_mime: str = "image/jpeg", **kwargs) -> dict:
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     for m in history[-12:]:
         messages.append(m)
-    messages.append({"role": "user", "content": message})
+
+    # ─── EXACT IMAGE HANDLING LOGIC ───
+    if image_base64:
+        # GPT-4o vision requires the 'image_url' to be an object with a 'url' key
+        image_data_url = f"data:{image_mime};base64,{image_base64}"
+        
+        user_content = [
+            {"type": "text", "text": message},
+            {
+                "type": "image_url", 
+                "image_url": {"url": image_data_url, "detail": "auto"}
+            }
+        ]
+        messages.append({"role": "user", "content": user_content})
+    else:
+        messages.append({"role": "user", "content": message})
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -88,19 +114,38 @@ def run_agent(message: str, history: list, context: dict, mode: str = None,
     )
 
     msg = response.choices[0].message
+    active_products = []
+
+    # If the LLM decides to use a tool, we execute it here
+    if msg.tool_calls:
+        messages.append(msg)
+        for tool_call in msg.tool_calls:
+            args = json.loads(tool_call.function.arguments)
+            result = ""
+            if tool_call.function.name == "search_products":
+                result = search_products(args.get("query_text"))
+                try: active_products.extend(json.loads(result))
+                except: pass
+            elif tool_call.function.name == "get_product_by_part_number":
+                result = get_product_by_part_number(args.get("part_number"))
+                try: active_products.append(json.loads(result))
+                except: pass
+            else:
+                # Call original tools via tool_executor
+                result = getattr(tool_executor, tool_call.function.name)(**args)
+            
+            messages.append({"role": "tool", "tool_call_id": tool_call.id, "name": tool_call.function.name, "content": str(result)})
+        
+        response = client.chat.completions.create(model="gpt-4o", messages=messages)
+        msg = response.choices[0].message
+
     raw = msg.content or ""
     answer, suggestions = _parse_suggestions(raw)
     
-    if not answer.strip():
-        answer = "I didn't quite catch that! Could you try rephrasing your question or let me know what appliance or order you are working on? I want to make sure I give you the absolute best help!"
-
-    if not suggestions:
-        suggestions = ["Help with refrigerator", "Help with dishwasher", "Talk to a human"]
-
     return {
         "answer": answer,
-        "suggestions": suggestions,
-        "products": [],
+        "suggestions": suggestions or ["Help with refrigerator", "Help with dishwasher", "Talk to a human"],
+        "products": active_products,
         "contextUpdates": {},
         "escalated": False,
         "escalationInfo": None
