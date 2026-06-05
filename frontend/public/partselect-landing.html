@@ -404,7 +404,9 @@
   .popup-input {
     flex: 1; min-width: 0; border: 1.5px solid #337778; border-radius: 20px; padding: 8px 10px;
     font-size: 13px; outline: none; font-family: inherit; color: #1a1a1a;
+    text-overflow: ellipsis;
   }
+  .popup-input::placeholder { font-size: 11px; color: #8e8e93; }
   .popup-send {
     background: #337778; color: white; border: none; border-radius: 20px;
     padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
@@ -609,6 +611,30 @@
   .video-thumb { max-width: 100%; height: auto; display: block; }
 
   .msg-content { flex: 1; min-width: 0; overflow: visible; word-break: break-word; }
+
+  /* psw: sparkle, pill, reset, dashboard */
+  .psw-wrap { position:relative; display:inline-flex; flex-shrink:0; }
+  .psw-pill { display:inline-flex; align-items:center; gap:3px;
+    background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.4);
+    border-radius:20px; padding:2px 8px; font-size:9px; font-weight:700; color:white;
+    white-space:nowrap; animation:pswF 3.1s ease-in-out infinite; }
+  @keyframes pswF { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  .psw-reset { background:none; border:1px solid rgba(255,255,255,0.35); border-radius:5px;
+    color:white; font-size:9px; font-weight:600; padding:3px 7px; cursor:pointer;
+    font-family:inherit; white-space:nowrap; transition:background 0.15s; opacity:.85; }
+  .psw-reset:hover { background:rgba(255,255,255,0.18); opacity:1; }
+  .psw-dash { padding:12px 10px 8px; display:flex; flex-direction:column; gap:8px; }
+  .psw-dash-hello { font-size:13px; font-weight:600; color:#1a1a1a; text-align:center; padding:4px 0 2px; }
+  .psw-cluster { border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; background:#f9fafb; }
+  .psw-cluster-label { font-size:9.5px; font-weight:700; color:#337778; text-transform:uppercase;
+    letter-spacing:.06em; margin-bottom:6px; border-left:2px solid #337778; padding-left:6px; }
+  .psw-cluster-note { font-size:9px; color:#aaa; margin-top:-3px; margin-bottom:5px; }
+  .psw-row { display:flex; gap:6px; }
+  .psw-btn { flex:1; background:white; border:1.5px solid #e0e0e0; border-radius:7px;
+    padding:7px 8px; font-size:11.5px; font-family:inherit; color:#1a1a1a;
+    cursor:pointer; text-align:left; transition:border-color .15s,background .15s; line-height:1.3; }
+  .psw-btn:hover { border-color:#337778; background:#f0faf8; }
+  .psw-dash-more { font-size:10px; color:#888; text-align:center; padding:4px 0 2px; }
 </style>
 </head>
 <body>
@@ -904,8 +930,8 @@
   <!-- Header -->
   <div class="popup-header">
     <div class="popup-header-left">
-      <div class="popup-avatar">
-        <svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">
+      <div class="psw-wrap">
+          <div class="popup-avatar"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">
           <circle cx="32" cy="32" r="28" fill="#FFF8E6" stroke="#F0A500" stroke-width="2"/>
           <rect x="26" y="6" width="12" height="7" rx="3" fill="#F0A500"/>
           <circle cx="32" cy="6" r="5" fill="#F0A500"/>
@@ -917,14 +943,15 @@
           <circle cx="50" cy="39" r="5.5" fill="#F0A500" opacity="0.3"/>
           <ellipse cx="32" cy="43" rx="11" ry="6" fill="white"/>
           <path d="M22 43 Q32 50 42 43" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <div class="popup-title">Patsy</div>
-        <div class="popup-subtitle">PartSelect Parts Expert</div>
-      </div>
+        </svg></div>
+        </div>
+        <div>
+          <div class="popup-title">Patsy</div>
+          <div class="psw-pill">AI Specialist</div>
+        </div>
     </div>
     <div class="popup-controls">
+      <button class="psw-reset" onclick="pswReset()">End Chat</button>
       <button class="popup-btn" onclick="toggleExpand()" title="Expand">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
       </button>
@@ -943,27 +970,35 @@
 
   <!-- Messages -->
   <div class="popup-messages" id="popupMessages">
-    <div class="msg">
-      <div class="popup-avatar msg-avatar">
-        <svg width="16" height="16" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#FFF8E6" stroke="#F0A500" stroke-width="2"/><circle cx="22" cy="30" r="5" fill="#2d2d2d"/><circle cx="42" cy="30" r="5" fill="#2d2d2d"/><path d="M22 43 Q32 50 42 43" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-      </div>
-      <div class="msg-content">
-        <div class="msg-name">
-          Patsy
-          <button class="listen-btn" onclick="speak(this)">🔊 Listen</button><button class="replay-btn" onclick="replay(this)">↩ Replay</button>
-        </div>
-        <div class="msg-bubble patsy" data-text="Hi! I'm Patsy, PartSelect's parts expert. Tell me what's going on with your refrigerator or dishwasher and I'll help you find the right fix — the first time.">
-          Hi! I'm Patsy, PartSelect's parts expert 👋 Tell me what's going on with your refrigerator or dishwasher and I'll help you find the right fix — the first time.
-        </div>
-        <div class="popup-suggestions">
-          <button class="popup-suggestion" onclick="quickSend(this)">I know my part number</button>
-          <button class="popup-suggestion" onclick="quickSend(this)">I know my model number</button>
-          <button class="popup-suggestion" onclick="quickSend(this)">I just know the symptom</button>
+    <div id="pswDash" class="psw-dash">
+      <div class="psw-dash-hello">Hi! I&#x2019;m Patsy — How can I help you today?</div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Account &amp; Order</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="check-order">Check Order Status</button>
+          <button class="psw-btn" data-psw="cancel-order">Cancel Order Help</button>
         </div>
       </div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Diagnostics &amp; Repair</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="find-model">Find Model Number</button>
+          <button class="psw-btn" data-psw="troubleshoot">Troubleshooting Help</button>
+        </div>
+      </div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Consultation &amp; Buying</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="consult">Consult an Expert</button>
+          <button class="psw-btn" data-psw="shop">Shop New Models</button>
+        </div>
+      </div>
+      <div class="psw-dash-more">... and many more. Just ask Patsy anything about your appliance.</div>
     </div>
   </div>
-
   <!-- Image preview -->
   <div class="img-preview" id="imgPreview">
     <img id="imgThumb" src="" alt=""/>
@@ -1735,6 +1770,98 @@ function syncCartBadge() {
                  document.getElementById('chatPopup').classList.contains('open');
   if (!badge) return;
   badge.style.display = (_cartCount > 0 && !chatOpen) ? 'flex' : 'none';
+}
+
+
+// ─── PSW: onboarding dashboard + reset ───────────────────────
+(function() {
+  // Map button data-psw values to first messages
+  var PSW_MSGS = {
+    'check-order':  'I need to check my order status.',
+    'cancel-order': 'I need help cancelling or changing my order.',
+    'find-model':   'How do I find my appliance model number?',
+    'troubleshoot': 'I need help troubleshooting my appliance.',
+    'consult':      'I would like to consult with a parts expert.',
+    'shop':         'I want to explore new appliance models and parts.'
+  };
+
+  // Click any .psw-btn → fill input + send
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-psw]');
+    if (!btn) return;
+    var msg = PSW_MSGS[btn.getAttribute('data-psw')] || 'Hello, I need help.';
+    pswHideDash();
+    var inp = document.getElementById('popupInput');
+    var snd = document.getElementById('sendBtn');
+    if (!inp) return;
+    inp.value = msg;
+    if (snd) snd.disabled = false;
+    sendMsg();
+  });
+
+  // Hide dashboard when user types and sends manually
+  var origSend = window.sendMsg;
+  window.sendMsg = async function() {
+    pswHideDash();
+    return origSend.apply(this, arguments);
+  };
+})();
+
+function pswHideDash() {
+  var d = document.getElementById('pswDash');
+  if (d) d.style.display = 'none';
+}
+
+function pswReset() {
+  // Reset conversation state
+  try { history = []; } catch(e) {}
+  try { context = {}; } catch(e) {}
+
+  // Clear all message DOM and re-draw dashboard
+  var msgs = document.getElementById('popupMessages');
+  if (!msgs) return;
+  msgs.innerHTML = '';
+
+  var dash = document.createElement('div');
+  dash.id = 'pswDash';
+  dash.className = 'psw-dash';
+  dash.innerHTML =
+    '<div class="psw-dash-hello">Hi! I&#x2019;m Patsy — How can I help you today?</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Account &amp; Order</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="check-order">Check Order Status</button>' +
+        '<button class="psw-btn" data-psw="cancel-order">Cancel Order Help</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Diagnostics &amp; Repair</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="find-model">Find Model Number</button>' +
+        '<button class="psw-btn" data-psw="troubleshoot">Troubleshooting Help</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Consultation &amp; Buying</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="consult">Consult an Expert</button>' +
+        '<button class="psw-btn" data-psw="shop">Shop New Models</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-dash-more">… and many more. Just ask Patsy anything about your appliance.</div>';
+
+  msgs.appendChild(dash);
+
+  // Clear input
+  var inp = document.getElementById('popupInput');
+  if (inp) inp.value = '';
+  var snd = document.getElementById('sendBtn');
+  if (snd) snd.disabled = true;
+  // Close the chat popup
+  var popup = document.getElementById('chatPopup');
+  if (popup && popup.classList.contains('open')) {
+    if (typeof toggleChat === 'function') toggleChat();
+  }
 }
 
 function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

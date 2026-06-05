@@ -404,7 +404,9 @@
   .popup-input {
     flex: 1; min-width: 0; border: 1.5px solid #337778; border-radius: 20px; padding: 8px 10px;
     font-size: 13px; outline: none; font-family: inherit; color: #1a1a1a;
+    text-overflow: ellipsis;
   }
+  .popup-input::placeholder { font-size: 11px; color: #8e8e93; }
   .popup-send {
     background: #337778; color: white; border: none; border-radius: 20px;
     padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
@@ -468,27 +470,50 @@
 
 
   /* Cart badge */
+  /* Cart badge — bottom-left corner, only visible when chat is CLOSED */
   #floatingCartBadge {
-    position: fixed; bottom: 90px; left: 20px; z-index: 1000;
-    background: #F0A500; color: white; border-radius: 50px;
-    padding: 9px 18px; font-size: 13px; font-weight: 700;
-    cursor: pointer; box-shadow: 0 4px 20px rgba(240,165,0,0.5);
-    display: none; align-items: center; gap: 7px;
-    border: none; font-family: inherit;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 900;
+    background: #F0A500;
+    color: white;
+    border-radius: 50px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 16px rgba(240,165,0,0.45);
+    display: none;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    font-family: inherit;
     transition: transform 0.15s, box-shadow 0.15s;
   }
   #floatingCartBadge:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(240,165,0,0.55); }
+  /* Cart toast — auto-hides, fixed corner, does not block chat */
   .cart-toast {
-    position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%);
-    background: #337778; color: white; padding: 10px 20px;
-    border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 1002;
-    white-space: nowrap; box-shadow: 0 3px 14px rgba(0,0,0,0.18);
-    animation: toastIn 0.25s ease forwards;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    background: #337778;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 2000;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.2);
     pointer-events: none;
+    max-width: 220px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.32s ease, transform 0.32s ease;
   }
   @keyframes toastIn {
-    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   @keyframes badgePop {
     0%   { transform: scale(1); }
@@ -507,9 +532,8 @@
 
   /* Prevent horizontal scroll in chat popup */
   .popup-messages { overflow-x: hidden !important; }
-  .msg-bubble { overflow-wrap: break-word; word-break: break-word; max-width: 100%; box-sizing: border-box; }
   .msg-bubble img { max-width: 100%; border-radius: 8px; display: block; margin-top: 6px; }
-  .popup-card { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+  .popup-card { display: block; width: 100%; box-sizing: border-box; overflow: hidden; }
   .popup-card-name { word-break: break-word; }
   .popup-suggestions { flex-wrap: wrap !important; gap: 5px !important; }
   .popup-suggestion { white-space: normal !important; word-break: break-word; font-size: 11px; max-width: 100%; }
@@ -566,6 +590,51 @@
   }
   .popup-card-ask:hover { background: #f0faf8; }
 
+
+
+  /* Minimal targeted fixes — only adds what's missing, overrides nothing */
+  .popup-messages { overflow-x: hidden; }
+  .popup-card-btns { flex-wrap: wrap; }
+  .popup-card-add { min-width: 70px; font-family: inherit; }
+  .popup-card-ask {
+    flex: 1; min-width: 70px; background: white; color: #337778;
+    border: 1.5px solid #337778; border-radius: 6px; padding: 7px 6px;
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .popup-card-hint {
+    font-size: 11px; color: #888; font-style: italic; padding: 6px 10px 0;
+  }
+  .ps-repair-card > div:last-child { min-width: 0; flex: 1; }
+  .ps-repair-topic { overflow-wrap: break-word; word-break: break-word; }
+  .popup-suggestion { word-break: break-word; }
+  .video-thumb-wrap { max-width: 220px; }
+  .video-thumb { max-width: 100%; height: auto; display: block; }
+
+  .msg-content { flex: 1; min-width: 0; overflow: visible; word-break: break-word; }
+
+  /* psw: sparkle, pill, reset, dashboard */
+  .psw-wrap { position:relative; display:inline-flex; flex-shrink:0; }
+  .psw-pill { display:inline-flex; align-items:center; gap:3px;
+    background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.4);
+    border-radius:20px; padding:2px 8px; font-size:9px; font-weight:700; color:white;
+    white-space:nowrap; animation:pswF 3.1s ease-in-out infinite; }
+  @keyframes pswF { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  .psw-reset { background:none; border:1px solid rgba(255,255,255,0.35); border-radius:5px;
+    color:white; font-size:9px; font-weight:600; padding:3px 7px; cursor:pointer;
+    font-family:inherit; white-space:nowrap; transition:background 0.15s; opacity:.85; }
+  .psw-reset:hover { background:rgba(255,255,255,0.18); opacity:1; }
+  .psw-dash { padding:12px 10px 8px; display:flex; flex-direction:column; gap:8px; }
+  .psw-dash-hello { font-size:13px; font-weight:600; color:#1a1a1a; text-align:center; padding:4px 0 2px; }
+  .psw-cluster { border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; background:#f9fafb; }
+  .psw-cluster-label { font-size:9.5px; font-weight:700; color:#337778; text-transform:uppercase;
+    letter-spacing:.06em; margin-bottom:6px; border-left:2px solid #337778; padding-left:6px; }
+  .psw-cluster-note { font-size:9px; color:#aaa; margin-top:-3px; margin-bottom:5px; }
+  .psw-row { display:flex; gap:6px; }
+  .psw-btn { flex:1; background:white; border:1.5px solid #e0e0e0; border-radius:7px;
+    padding:7px 8px; font-size:11.5px; font-family:inherit; color:#1a1a1a;
+    cursor:pointer; text-align:left; transition:border-color .15s,background .15s; line-height:1.3; }
+  .psw-btn:hover { border-color:#337778; background:#f0faf8; }
+  .psw-dash-more { font-size:10px; color:#888; text-align:center; padding:4px 0 2px; }
 </style>
 </head>
 <body>
@@ -861,8 +930,8 @@
   <!-- Header -->
   <div class="popup-header">
     <div class="popup-header-left">
-      <div class="popup-avatar">
-        <svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">
+      <div class="psw-wrap">
+          <div class="popup-avatar"><svg width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">
           <circle cx="32" cy="32" r="28" fill="#FFF8E6" stroke="#F0A500" stroke-width="2"/>
           <rect x="26" y="6" width="12" height="7" rx="3" fill="#F0A500"/>
           <circle cx="32" cy="6" r="5" fill="#F0A500"/>
@@ -874,14 +943,15 @@
           <circle cx="50" cy="39" r="5.5" fill="#F0A500" opacity="0.3"/>
           <ellipse cx="32" cy="43" rx="11" ry="6" fill="white"/>
           <path d="M22 43 Q32 50 42 43" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <div class="popup-title">Patsy</div>
-        <div class="popup-subtitle">PartSelect Parts Expert</div>
-      </div>
+        </svg></div>
+        </div>
+        <div>
+          <div class="popup-title">Patsy</div>
+          <div class="psw-pill">AI Specialist</div>
+        </div>
     </div>
     <div class="popup-controls">
+      <button class="psw-reset" onclick="pswReset()">End Chat</button>
       <button class="popup-btn" onclick="toggleExpand()" title="Expand">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
       </button>
@@ -900,27 +970,35 @@
 
   <!-- Messages -->
   <div class="popup-messages" id="popupMessages">
-    <div class="msg">
-      <div class="popup-avatar msg-avatar">
-        <svg width="16" height="16" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#FFF8E6" stroke="#F0A500" stroke-width="2"/><circle cx="22" cy="30" r="5" fill="#2d2d2d"/><circle cx="42" cy="30" r="5" fill="#2d2d2d"/><path d="M22 43 Q32 50 42 43" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-      </div>
-      <div>
-        <div class="msg-name">
-          Patsy
-          <button class="listen-btn" onclick="speak(this)">🔊 Listen</button><button class="replay-btn" onclick="replay(this)">↩ Replay</button>
-        </div>
-        <div class="msg-bubble patsy" data-text="Hi! I'm Patsy, PartSelect's parts expert. Tell me what's going on with your refrigerator or dishwasher and I'll help you find the right fix — the first time.">
-          Hi! I'm Patsy, PartSelect's parts expert 👋 Tell me what's going on with your refrigerator or dishwasher and I'll help you find the right fix — the first time.
-        </div>
-        <div class="popup-suggestions">
-          <button class="popup-suggestion" onclick="quickSend(this)">I know my part number</button>
-          <button class="popup-suggestion" onclick="quickSend(this)">I know my model number</button>
-          <button class="popup-suggestion" onclick="quickSend(this)">I just know the symptom</button>
+    <div id="pswDash" class="psw-dash">
+      <div class="psw-dash-hello">Hi! I&#x2019;m Patsy — How can I help you today?</div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Account &amp; Order</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="check-order">Check Order Status</button>
+          <button class="psw-btn" data-psw="cancel-order">Cancel Order Help</button>
         </div>
       </div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Diagnostics &amp; Repair</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="find-model">Find Model Number</button>
+          <button class="psw-btn" data-psw="troubleshoot">Troubleshooting Help</button>
+        </div>
+      </div>
+
+      <div class="psw-cluster">
+        <div class="psw-cluster-label">Consultation &amp; Buying</div>
+        <div class="psw-row">
+          <button class="psw-btn" data-psw="consult">Consult an Expert</button>
+          <button class="psw-btn" data-psw="shop">Shop New Models</button>
+        </div>
+      </div>
+      <div class="psw-dash-more">... and many more. Just ask Patsy anything about your appliance.</div>
     </div>
   </div>
-
   <!-- Image preview -->
   <div class="img-preview" id="imgPreview">
     <img id="imgThumb" src="" alt=""/>
@@ -990,6 +1068,7 @@ function toggleChat() {
     positionPopup();
     document.getElementById('popupInput').focus();
   }
+  syncCartBadge(); // badge hides when chat opens, shows when chat closes
 }
 
 function toggleExpand() {
@@ -997,6 +1076,7 @@ function toggleExpand() {
   isExpanded = !isExpanded;
   popup.classList.toggle('expanded', isExpanded);
   setTimeout(positionPopup, 10);
+  syncCartBadge(); // hide badge when expanded
 }
 
 // Enable/disable send
@@ -1079,12 +1159,16 @@ function appendPatsyMsg(text, products, suggestions) {
   const div = document.createElement('div');
   div.className = 'msg';
 
-  // Parse markdown: images → markdown links → bare URLs → bold → newlines
+  // Parse markdown: images → links → bare URLs (direct card, no raw HTML) → bold → newlines
   const formatted = text
     .replace(/!\[([^\]]*?)\]\(([^)]+?)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin-top:6px;display:block;" onerror="this.remove()">')
-    .replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, '<a href="$2" target="_blank" style="color:#337778;text-decoration:underline;">$1</a>')
-    .replace(/(https?:\/\/[^\s<>"']+)/g, function(url) {
-      return '<a href="' + url + '" target="_blank" style="color:#337778;">' + url + '</a>';
+    .replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, function(m, label, url) {
+      var card = buildVideoCard(url);
+      return card || ('<a href="' + url + '" target="_blank" style="color:#337778;">' + label + '</a>');
+    })
+    .replace(/(?<![="'`=(])(https?:\/\/[^\s<>"'`]+)/g, function(match, url) {
+      // Only process bare URLs - skip URLs already inside HTML attributes
+      return buildVideoCard(url || match) || (url || match);
     })
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n/g, '<br/>');
@@ -1127,8 +1211,12 @@ function appendPatsyMsg(text, products, suggestions) {
     productsHtml = hint + cards;
   }
 
-  // Use backend-generated suggestions
-  const backendSuggestions = (suggestions && suggestions.length) ? suggestions : [];
+  // Use backend-generated suggestions — filter out any "add to cart" chips
+  const rawSuggestions = (suggestions && suggestions.length) ? suggestions : [];
+  const backendSuggestions = rawSuggestions.filter(function(s) {
+    var l = s.toLowerCase();
+    return !l.includes('add to cart') && !l.includes('add this to') && !l.includes('add it to cart');
+  });
   const suggHtml = backendSuggestions.length ? `
     <div class="popup-suggestions">
       ${backendSuggestions.map(s => `<button class="popup-suggestion" onclick="document.getElementById('popupInput').value='${s}';sendMsg()">${s}</button>`).join('')}
@@ -1138,7 +1226,7 @@ function appendPatsyMsg(text, products, suggestions) {
     <div class="popup-avatar msg-avatar">
       <svg width="16" height="16" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#FFF8E6" stroke="#F0A500" stroke-width="2"/><circle cx="22" cy="30" r="5" fill="#2d2d2d"/><circle cx="42" cy="30" r="5" fill="#2d2d2d"/><path d="M22 43 Q32 50 42 43" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
     </div>
-    <div>
+    <div class="msg-content">
       <div class="msg-name">Patsy <button class="listen-btn" onclick="speak(this)">🔊 Listen</button><button class="replay-btn" onclick="replay(this)">↩ Replay</button></div>
       <div class="msg-bubble patsy" data-text="${text.replace(/"/g, '&quot;')}">${formatted}</div>
       ${productsHtml}
@@ -1149,9 +1237,9 @@ function appendPatsyMsg(text, products, suggestions) {
   // Scroll so Patsy's message top is visible — user reads naturally downward
   setTimeout(function() { div.scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
 
-  // Render video previews — YouTube thumbnails + PartSelect repair cards
+  // Video cards are built directly in formatter; enforce video-first order
   const patsyBubble = div.querySelector('.msg-bubble.patsy');
-  if (patsyBubble) setTimeout(() => renderVideoLinks(patsyBubble), 80);
+  // Videos placed inline by buildVideoCard
 
   // Highlight parts mentioned by Patsy on the landing page
   if (products && products.length > 0) {
@@ -1443,7 +1531,7 @@ function openChatWithContext(category) {
 
 function askAboutPart(partNumber, partName) {
   if (!document.getElementById('chatPopup').classList.contains('open')) { toggleChat(); }
-  var msg = "I'm looking at the " + partName + " (" + partNumber + ") on the parts page. Can you tell me if this is the right part for my appliance and how to install it?";
+  var msg = "I'm looking at the " + partName + " (" + partNumber + "). Can you check if this fits my appliance?";
   setTimeout(function() {
     document.getElementById('popupInput').value = msg;
     document.getElementById('sendBtn').disabled = false;
@@ -1455,37 +1543,78 @@ function askAboutPart(partNumber, partName) {
 // ─── CART BADGE ───
 var _cartCount = 0;
 
+/*
+ * Cart toast state — mirrors React pattern:
+ *   toastTrigger  : increments each time an item is added (like setState)
+ *   isToastVisible: boolean controlling render
+ *   _toastTimer   : clearTimeout handle so multiple adds reset the countdown
+ *   _toastEl      : single DOM reference reused across adds
+ */
+var _toastTrigger   = 0;
+var _isToastVisible = false;
+var _toastTimer     = null;
+var _toastEl        = null;
+
 function addToCartFromPopup(partNum, partName, price) {
-  _cartCount++;
+  _cartItems.push({ num: String(partNum || ''), name: String(partName || ''), price: price || 0 });
+  _cartCount = _cartItems.length;
   var badge = document.getElementById('floatingCartBadge');
   var num = document.getElementById('cartBadgeNum');
   if (num) num.textContent = _cartCount;
   if (badge) {
-    badge.style.display = 'flex';
     badge.style.animation = 'none';
     requestAnimationFrame(function() {
       badge.style.animation = 'badgePop 0.4s ease forwards';
     });
   }
+  syncCartBadge(); // only shows badge if chat is closed
   showCartToast(String(partName));
 }
 
 function showCartToast(partName) {
-  document.querySelectorAll('.cart-toast').forEach(function(t) { t.remove(); });
-  var t = document.createElement('div');
-  t.className = 'cart-toast';
-  t.innerHTML = '<strong>✓ Added to cart</strong><br><span style="font-size:11px;opacity:0.85">' + escHtml(String(partName)) + '</span>';
-  document.body.appendChild(t);
-  setTimeout(function() {
-    t.style.opacity = '0';
-    t.style.transition = 'opacity 0.4s';
-    setTimeout(function() { t.remove(); }, 450);
+  /*
+   * Equivalent to: setToastTrigger(t => t + 1)
+   * useEffect watches toastTrigger, sets isCartToastVisible=true,
+   * clears old timeout, starts new 2500ms timeout to set it false.
+   */
+  _toastTrigger++;
+
+  // Clear any existing hide timer — timer resets on each add
+  if (_toastTimer) clearTimeout(_toastTimer);
+
+  // Create or reuse the single toast element (render when visible)
+  if (!_toastEl || !document.body.contains(_toastEl)) {
+    _toastEl = document.createElement('div');
+    _toastEl.className = 'cart-toast';
+    _toastEl.setAttribute('role', 'status');
+    document.body.appendChild(_toastEl);
+  }
+
+  // Update content and show (isCartToastVisible = true)
+  _toastEl.innerHTML =
+    '<strong>Added to cart</strong>' +
+    '<div style="font-size:11px;margin-top:3px;opacity:0.85">' +
+    escHtml(String(partName || '')) + '</div>';
+  _toastEl.style.opacity   = '1';
+  _toastEl.style.transform = 'translateY(0)';
+  _isToastVisible = true;
+
+  // Auto-hide after 2500ms (isCartToastVisible = false)
+  _toastTimer = setTimeout(function() {
+    _isToastVisible = false;
+    _toastEl.style.opacity   = '0';
+    _toastEl.style.transform = 'translateY(6px)';
+    // Remove from DOM after fade completes so it takes no space
+    setTimeout(function() {
+      if (_toastEl && document.body.contains(_toastEl)) {
+        document.body.removeChild(_toastEl);
+        _toastEl = null;
+      }
+    }, 350);
   }, 2500);
 }
-
-
 function askAboutCard(partNum, partName) {
-  var msg = 'Can you tell me more about the ' + partName + ' (' + partNum + ')? Is this the right part for my specific issue, and how do I know if I actually need it?';
+  var msg = "I'm interested in the " + partName + ' (' + partNum + '). Can you check if it fits my appliance?';
   var inp = document.getElementById('popupInput');
   if (inp) {
     inp.value = msg;
@@ -1514,13 +1643,272 @@ function askAboutCardFromBtn(btn) {
   askAboutCard(btn.dataset.num, btn.dataset.name);
 }
 
+
+// ─── DIRECT VIDEO CARD BUILDER (no intermediate <a> tags) ───
+function buildVideoCard(url) {
+  var clean = url.replace(/[<>"']/g, '');
+
+  // YouTube
+  if (clean.indexOf('youtube.com/watch') !== -1) {
+    var vid = (clean.split('v=')[1] || '').split('&')[0];
+    if (!vid) return '';
+    var thumb = 'https://img.youtube.com/vi/' + vid + '/mqdefault.jpg';
+    return '<div class="video-preview">' +
+      '<a href="' + clean + '" target="_blank" class="video-thumb-link">' +
+        '<div class="video-thumb-wrap">' +
+          '<img class="video-thumb" src="' + thumb + '" alt="Video" onerror="this.remove()">' +
+          '<div class="video-play-overlay"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>' +
+        '</div>' +
+        '<div class="video-caption">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5S4.5 3.5 2.6 4.1A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8z" fill="#FF0000"/><polygon points="9.7,15.5 15.8,12 9.7,8.5" fill="white"/></svg>' +
+          ' Watch on YouTube' +
+        '</div>' +
+      '</a></div>';
+  }
+
+  // PartSelect repair/blog page
+  if (clean.indexOf('partselect.com/Repair/') !== -1 || clean.indexOf('partselect.com/blog/') !== -1) {
+    var after = clean.indexOf('/Repair/') !== -1
+      ? clean.split('/Repair/')[1]
+      : clean.split('/blog/')[1];
+    after = after || '';
+    var parts = after.split('/').filter(function(s) { return s && s.length > 0; });
+    var topic = parts.map(function(s) {
+      return s.replace(/-/g, ' ').replace(/\.html?$/, '');
+    }).join(' \u203A ');
+    if (!topic) topic = 'Repair Guide';
+    return '<div class="video-preview">' +
+      '<a href="' + clean + '" target="_blank" class="ps-repair-card">' +
+        '<div class="ps-play-circle"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>' +
+        '<div>' +
+          '<div class="ps-repair-label">\uD83D\uDCF9 PartSelect Repair Guide</div>' +
+          '<div class="ps-repair-topic">' + topic + '</div>' +
+        '</div>' +
+      '</a></div>';
+  }
+
+  // All other URLs: short clickable link, never show raw URL
+  var label = clean.replace(/^https?:\/\//, '').split('/')[0];
+  return '<a href="' + clean + '" target="_blank" style="color:#337778;font-weight:600;">' + label + ' \u2197</a>';
+}
+
+// ─── VIDEO-FIRST ENFORCER ───
+function moveVideosFirst(bubble) {
+  var previews = Array.from(bubble.querySelectorAll('.video-preview'));
+  if (previews.length === 0) return;
+  previews.forEach(function(p) {
+    // Move each video preview to the very top of the bubble
+    bubble.insertBefore(p, bubble.firstChild);
+  });
+  // Clean up any leading <br> that ends up above the video after the move
+  while (bubble.firstChild && bubble.firstChild.nodeName === 'BR') {
+    bubble.firstChild.remove();
+  }
+}
+
+
+// ─── MINI CART DRAWER ───
+var _cartItems = [];
+
+function toggleCartDrawer() {
+  var drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  var isOpen = drawer.style.display === 'flex';
+  drawer.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) renderCartDrawer();
+}
+
+function renderCartDrawer() {
+  var list = document.getElementById('cartItemsList');
+  if (!list) return;
+  if (_cartItems.length === 0) {
+    list.innerHTML = '<p style="color:#999;font-size:13px;text-align:center;margin:16px 0;">Your cart is empty</p>';
+    return;
+  }
+  list.innerHTML = _cartItems.map(function(item, i) {
+    var price = item.price ? '$' + parseFloat(item.price).toFixed(2) : '';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#f9fafb;border-radius:8px;gap:8px;">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:12px;font-weight:700;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(item.name) + '</div>' +
+        '<div style="font-size:10px;color:#999;">' + escHtml(item.num) + '</div>' +
+      '</div>' +
+      '<div style="font-size:13px;font-weight:700;color:#337778;white-space:nowrap;">' + price + '</div>' +
+      '<button onclick="removeCartItem(' + i + ')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0 2px;" title="Remove">×</button>' +
+    '</div>';
+  }).join('');
+}
+
+function removeCartItem(index) {
+  _cartItems.splice(index, 1);
+  _cartCount = _cartItems.length;
+  var num = document.getElementById('cartBadgeNum');
+  if (num) num.textContent = _cartCount;
+  if (_cartCount === 0) {
+    var badge = document.getElementById('floatingCartBadge');
+    if (badge) badge.style.display = 'none';
+    var drawer = document.getElementById('cartDrawer');
+    if (drawer) drawer.style.display = 'none';
+  }
+  renderCartDrawer();
+}
+
+// Close drawer when clicking outside
+document.addEventListener('click', function(e) {
+  var drawer = document.getElementById('cartDrawer');
+  var badge = document.getElementById('floatingCartBadge');
+  if (drawer && drawer.style.display === 'flex' && !drawer.contains(e.target) && !badge.contains(e.target)) {
+    drawer.style.display = 'none';
+  }
+}, true);
+
+
+// ─── CART BADGE VISIBILITY ───
+// Badge only shows when chat is CLOSED and cart has items
+function syncCartBadge() {
+  var badge   = document.getElementById('floatingCartBadge');
+  var chatOpen = document.getElementById('chatPopup') &&
+                 document.getElementById('chatPopup').classList.contains('open');
+  if (!badge) return;
+  badge.style.display = (_cartCount > 0 && !chatOpen) ? 'flex' : 'none';
+}
+
+
+// ─── PSW: onboarding dashboard + reset ───────────────────────
+(function() {
+  // Map button data-psw values to first messages
+  var PSW_MSGS = {
+    'check-order':  'I need to check my order status.',
+    'cancel-order': 'I need help cancelling or changing my order.',
+    'find-model':   'How do I find my appliance model number?',
+    'troubleshoot': 'I need help troubleshooting my appliance.',
+    'consult':      'I would like to consult with a parts expert.',
+    'shop':         'I want to explore new appliance models and parts.'
+  };
+
+  // Click any .psw-btn → fill input + send
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-psw]');
+    if (!btn) return;
+    var msg = PSW_MSGS[btn.getAttribute('data-psw')] || 'Hello, I need help.';
+    pswHideDash();
+    var inp = document.getElementById('popupInput');
+    var snd = document.getElementById('sendBtn');
+    if (!inp) return;
+    inp.value = msg;
+    if (snd) snd.disabled = false;
+    sendMsg();
+  });
+
+  // Hide dashboard when user types and sends manually
+  var origSend = window.sendMsg;
+  window.sendMsg = async function() {
+    pswHideDash();
+    return origSend.apply(this, arguments);
+  };
+})();
+
+function pswHideDash() {
+  var d = document.getElementById('pswDash');
+  if (d) d.style.display = 'none';
+}
+
+function pswReset() {
+  // Reset conversation state
+  try { history = []; } catch(e) {}
+  try { context = {}; } catch(e) {}
+
+  // Clear all message DOM and re-draw dashboard
+  var msgs = document.getElementById('popupMessages');
+  if (!msgs) return;
+  msgs.innerHTML = '';
+
+  var dash = document.createElement('div');
+  dash.id = 'pswDash';
+  dash.className = 'psw-dash';
+  dash.innerHTML =
+    '<div class="psw-dash-hello">Hi! I&#x2019;m Patsy — How can I help you today?</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Account &amp; Order</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="check-order">Check Order Status</button>' +
+        '<button class="psw-btn" data-psw="cancel-order">Cancel Order Help</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Diagnostics &amp; Repair</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="find-model">Find Model Number</button>' +
+        '<button class="psw-btn" data-psw="troubleshoot">Troubleshooting Help</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-cluster">' +
+      '<div class="psw-cluster-label">Consultation &amp; Buying</div>' +
+      '<div class="psw-row">' +
+        '<button class="psw-btn" data-psw="consult">Consult an Expert</button>' +
+        '<button class="psw-btn" data-psw="shop">Shop New Models</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="psw-dash-more">… and many more. Just ask Patsy anything about your appliance.</div>';
+
+  msgs.appendChild(dash);
+
+  // Clear input
+  var inp = document.getElementById('popupInput');
+  if (inp) inp.value = '';
+  var snd = document.getElementById('sendBtn');
+  if (snd) snd.disabled = true;
+  // Close the chat popup
+  var popup = document.getElementById('chatPopup');
+  if (popup && popup.classList.contains('open')) {
+    if (typeof toggleChat === 'function') toggleChat();
+  }
+}
+
 function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 
 <!-- FLOATING CART BADGE -->
-<button id="floatingCartBadge" onclick="window.open('https://www.partselect.com/cart','_blank')" title="View cart on PartSelect">
+<button id="floatingCartBadge" onclick="toggleCartPanel()" title="View cart">
   🛒 <span id="cartBadgeNum">0</span> in cart
 </button>
+
+<!-- MINI CART PANEL -->
+<div id="cartPanel" style="
+  display:none; position:fixed; bottom:140px; left:20px; z-index:1005;
+  background:white; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.18);
+  width:260px; overflow:hidden; border:1.5px solid #e5e7eb;
+">
+  <div style="background:#337778;color:white;padding:10px 14px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
+    <span>🛒 Your Cart</span>
+    <button onclick="toggleCartPanel()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;line-height:1;">×</button>
+  </div>
+  <div id="cartItemsList" style="padding:10px 14px;max-height:200px;overflow-y:auto;font-size:12px;"></div>
+  <div style="padding:8px 14px;border-top:1px solid #f0f0f0;font-size:10px;color:#bbb;text-align:center;font-style:italic;">
+    Cart is simulated for this demo. In production, connects to PartSelect's cart system.
+  </div>
+</div>
+
+
+<!-- MINI CART DRAWER -->
+<div id="cartDrawer" style="
+  display:none; position:fixed; bottom:150px; left:20px; z-index:1005;
+  background:white; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.18);
+  width:280px; max-height:360px; overflow:hidden; flex-direction:column;
+  border:1.5px solid #e5e7eb; animation:popIn 0.2s ease;
+">
+  <div style="background:#337778;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-radius:12px 12px 0 0;">
+    <span style="color:white;font-weight:700;font-size:14px;">🛒 Your Cart</span>
+    <button onclick="toggleCartDrawer()" style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:13px;">✕</button>
+  </div>
+  <div id="cartItemsList" style="overflow-y:auto;max-height:240px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;">
+    <p style="color:#999;font-size:13px;text-align:center;margin:16px 0;">Your cart is empty</p>
+  </div>
+  <div style="padding:10px 12px;border-top:1px solid #f0f0f0;background:#fafafa;border-radius:0 0 12px 12px;">
+    <p style="font-size:10px;color:#bbb;text-align:center;margin:0;">
+      Demo cart — in production, connects to PartSelect checkout
+    </p>
+  </div>
+</div>
 
 </body>
 </html>
