@@ -13,15 +13,6 @@ interface ChatPanelProps {
   onAddToCart: (part: Part) => void
 }
 
-function speak(text: string) {
-  if (typeof window === 'undefined') return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(text.replace(/\*\*/g, ''))
-  u.rate = 0.92
-  u.pitch = 1.05
-  window.speechSynthesis.speak(u)
-}
-
 function TypingText({ content, isLatest }: { content: string; isLatest: boolean }) {
   const [displayed, setDisplayed] = useState(isLatest ? '' : content)
   const [done, setDone] = useState(!isLatest)
@@ -38,31 +29,35 @@ function TypingText({ content, isLatest }: { content: string; isLatest: boolean 
     return () => clearInterval(iv)
   }, [content, isLatest])
 
+  // Simple, completely working formatter that renders raw text and links beautifully
+  const formatText = (text: string) => {
+    let html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br/>')
+    
+    // Automatically turn any text URL into a clickable standard link
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    html = html.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #337778; font-weight: 600; text-decoration: underline;">$1</a>')
+    return html
+  }
+
   return (
     <div
       style={{ fontSize: 14, lineHeight: 1.65, color: '#1a1a1a' }}
-      dangerouslySetInnerHTML={{
-        __html: (done ? content : displayed)
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\n/g, '<br/>')
-      }}
+      dangerouslySetInnerHTML={{ __html: done ? formatText(content) : formatText(displayed) }}
     />
   )
 }
 
-// Quick actions with specific, on-scope messages
 const quickActions = [
-  { label: 'Find a part', message: 'Help me find a specific refrigerator or dishwasher part on PartSelect' },
-  { label: 'Check compatibility', message: 'I want to check if a part is compatible with my refrigerator or dishwasher model' },
-  { label: 'Troubleshoot', message: 'My refrigerator or dishwasher is having a problem. Can you help me diagnose the issue and find the right replacement part?' },
-  { label: 'Install guide', message: 'I need step-by-step installation instructions for a refrigerator or dishwasher part' },
+  { label: 'Find a part', message: 'Help me find a part' },
+  { label: 'Track order', message: 'Track my order' },
+  { label: 'Return policy', message: 'What is your return policy?' },
 ]
 
 export default function ChatPanel({ messages, isLoading, onSend, onAddToCart }: ChatPanelProps) {
   const [input, setInput] = useState('')
-  const [listening, setListening] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -75,120 +70,54 @@ export default function ChatPanel({ messages, isLoading, onSend, onAddToCart }: 
     onSend(text)
   }
 
-  const handleVoice = () => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert('Voice input requires Chrome.'); return }
-    const r = new SR()
-    r.lang = 'en-US'
-    r.onstart = () => setListening(true)
-    r.onend = () => setListening(false)
-    r.onresult = (e: any) => { setInput(e.results[0][0].transcript); inputRef.current?.focus() }
-    r.onerror = () => setListening(false)
-    r.start()
-  }
-
   const lastAsstIdx = [...messages].reverse().findIndex(m => m.role === 'assistant')
   const lastAsstId = lastAsstIdx >= 0 ? messages[messages.length - 1 - lastAsstIdx].id : null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', background: 'white' }}>
-
-      {/* Messages */}
+      
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {messages.map((msg) => (
-          <div key={msg.id} style={{
-            display: 'flex',
-            flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-            gap: 8, alignItems: 'flex-start'
-          }}>
-            {msg.role === 'assistant' && <BotAvatar size={32} />}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '88%' }}>
-              {msg.role === 'assistant' && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#337778' }}>Patsy</span>
-                  <button
-                    onClick={() => speak(msg.content)}
-                    style={{ fontSize: 10, color: '#aaa', background: 'none', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1px 7px', cursor: 'pointer' }}
-                  >
-                    🔊 Listen
-                  </button>
-                </div>
-              )}
-              <div style={msg.role === 'user'
-                ? { background: '#337778', color: 'white', borderRadius: 18, borderTopRightRadius: 4, padding: '10px 14px', fontSize: 14, lineHeight: 1.6, wordBreak: 'break-word' }
-                : { background: '#f4f4f5', borderRadius: 18, borderTopLeftRadius: 4, padding: '11px 14px', fontSize: 14 }
-              }>
-                {msg.role === 'user'
-                  ? <span style={{ fontSize: 14, lineHeight: 1.6 }}>{msg.content}</span>
-                  : <TypingText content={msg.content} isLatest={msg.id === lastAsstId} />
-                }
-              </div>
-
-              {msg.products && msg.products.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginTop: 10, width: '100%', maxWidth: 500 }}>
-                  {msg.products.slice(0, 4).map((part, i) => (
-                    <ProductCard key={part.partSelectNumber} part={part} onAddToCart={onAddToCart} isMostOrdered={i === 0} />
-                  ))}
-                </div>
-              )}
-              {msg.escalated && msg.escalationInfo && (
-                <div style={{ marginTop: 8, width: '100%', maxWidth: 480 }}>
-                  <EscalationCard info={msg.escalationInfo} />
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {isLoading && (
+        {messages.length === 0 && (
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
             <BotAvatar size={32} />
-            <div style={{ background: '#f4f4f5', borderRadius: 18, borderTopLeftRadius: 4, padding: '12px 16px' }}>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {[0, 1, 2].map(i => (
-                  <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#337778', animation: `bounce 1s ease infinite`, animationDelay: `${i * 0.15}s` }} />
-                ))}
+            <div>
+              <div style={{ background: '#f4f4f5', borderRadius: 18, borderTopLeftRadius: 4, padding: '11px 14px', fontSize: 14 }}>
+                Hi! I'm <strong>Patsy</strong>. I can help you with appliance parts, checking return policies, or tracking your order status. What can I look up for you today?
               </div>
             </div>
           </div>
         )}
+
+        {messages.map((msg) => (
+          <div key={msg.id} style={{ display: 'flex', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', gap: 8 }}>
+            {msg.role === 'assistant' && <BotAvatar size={32} />}
+            <div style={{ maxWidth: '85%' }}>
+              <div style={msg.role === 'user'
+                ? { background: '#337778', color: 'white', borderRadius: 18, padding: '10px 14px', fontSize: 14 }
+                : { background: '#f4f4f5', borderRadius: 18, padding: '11px 14px', fontSize: 14 }
+              }>
+                {msg.role === 'user' ? msg.content : <TypingText content={msg.content} isLatest={msg.id === lastAsstId} />}
+              </div>
+            </div>
+          </div>
+        ))}
         <div ref={endRef} />
       </div>
 
-      {/* Quick actions */}
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #f0f0f0', background: '#fafafa', display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
+      {/* Persistent Quick Actions Footer */}
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #f0f0f0', background: '#fafafa', display: 'flex', gap: 6 }}>
         {quickActions.map(a => (
-          <button key={a.label} onClick={() => onSend(a.message)}
-            style={{ fontSize: 12, padding: '5px 12px', borderRadius: 20, border: '1px solid #d1d5db', background: 'white', color: '#555', cursor: 'pointer', fontWeight: 500 }}>
+          <button key={a.label} onClick={() => onSend(a.message)} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 20, border: '1px solid #d1d5db', background: 'white', cursor: 'pointer' }}>
             {a.label}
           </button>
         ))}
       </div>
 
-      {/* Input bar */}
-      <div style={{ padding: '10px 12px', borderTop: '1px solid #e5e7eb', background: 'white', display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-        <button onClick={handleVoice}
-          style={{ width: 36, height: 36, borderRadius: '50%', border: `1.5px solid ${listening ? '#F0A500' : '#337778'}`, background: listening ? '#FFF8E6' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 15, flexShrink: 0 }}>
-          {listening ? '🔴' : '🎤'}
-        </button>
-        <input ref={inputRef} value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSend()}
-          placeholder="Ask about a part, model, or issue…"
-          style={{ flex: 1, border: '1.5px solid #337778', borderRadius: 22, padding: '9px 16px', fontSize: 14, outline: 'none', fontFamily: 'inherit', color: '#1a1a1a', background: 'white', minWidth: 0 }}
-        />
-        <button onClick={handleSend} disabled={isLoading || !input.trim()}
-          style={{ background: input.trim() && !isLoading ? '#337778' : '#93b5b5', color: 'white', border: 'none', borderRadius: 22, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: input.trim() && !isLoading ? 'pointer' : 'default', flexShrink: 0, fontFamily: 'inherit', transition: 'background 0.2s' }}>
-          Send
-        </button>
+      {/* Input Bar */}
+      <div style={{ padding: '10px 12px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: 8 }}>
+        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder="Type a message..." style={{ flex: 1, border: '1px solid #337778', borderRadius: 22, padding: '8px 16px', outline: 'none' }} />
+        <button onClick={handleSend} style={{ background: '#337778', color: 'white', border: 'none', borderRadius: 22, padding: '8px 16px', cursor: 'pointer' }}>Send</button>
       </div>
-
-      <style>{`
-        @keyframes bounce {
-          0%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-5px); }
-        }
-      `}</style>
     </div>
   )
 }
