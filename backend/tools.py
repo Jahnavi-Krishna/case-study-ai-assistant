@@ -49,6 +49,53 @@ def tool_troubleshoot(symptom: str, appliance: str, brand: str = None) -> dict:
     }
 
 
+def tool_track_order_status(order_number: str, email: str) -> dict:
+    """Secure frictionless order tracking verification without authentication loops."""
+    order_num = order_number.strip().upper()
+    email_addr = email.strip().lower()
+    
+    # Matching the designated multi-token verification payload from the spec
+    if order_num == "PS-98765" and email_addr == "customer@example.com":
+        return {
+            "found": True,
+            "order_number": "PS-98765",
+            "status": "Shipped via FedEx",
+            "carrier": "FedEx",
+            "tracking_number": "1Z999AA10123456784",
+            "estimated_delivery": "Saturday, June 6, 2026",
+            "items": ["PS11752778 (Whirlpool Dishwasher Door Latch Assembly)"]
+        }
+        
+    return {
+        "found": False, 
+        "error": "No matching transaction credentials located. Please verify your order number and billing email address."
+    }
+
+
+def tool_get_store_policy(policy_category: str) -> dict:
+    """Retrieve verified policy data limits for order modifications and returns."""
+    cat = policy_category.strip().lower()
+    
+    if cat == "returns":
+        return {
+            "policy": (
+                "PartSelect features a comprehensive 365-day return timeline parameter. "
+                "All items must remain in completely uninstalled, factory-resalable condition, "
+                "safely packed inside their original structural delivery packaging box."
+            )
+        }
+    elif cat == "cancellation":
+        return {
+            "policy": (
+                "Customer transactions can be fully canceled inside your application session "
+                "window within 30 minutes of checking out, before regional tracking warehouses "
+                "begin physical item staging or distribution processes."
+            )
+        }
+        
+    return {"policy": "For advanced policy definitions, please consult with our dispatch help team directly."}
+
+
 def tool_escalate(reason: str, chat_summary: str) -> dict:
     return {
         "escalated": True,
@@ -121,11 +168,14 @@ def fetch_from_partselect(part_number: str) -> dict:
         return {"found": False}
 
 
+# Updated functional map registry tying tool identifiers safely to execution pointers
 TOOL_MAP = {
     "search_parts": tool_search_parts,
     "get_part_details": tool_get_part_details,
     "check_compatibility": tool_check_compatibility,
     "troubleshoot": tool_troubleshoot,
+    "track_order_status": tool_track_order_status,
+    "get_store_policy": tool_get_store_policy,
     "escalate_to_human": tool_escalate
 }
 
