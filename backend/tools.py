@@ -50,11 +50,10 @@ def tool_troubleshoot(symptom: str, appliance: str, brand: str = None) -> dict:
 
 
 def tool_track_order_status(order_number: str, email: str) -> dict:
-    """Secure frictionless order tracking verification without authentication loops."""
+    """Secure frictionless order tracking verification with high-conversion video-first payloads."""
     order_num = order_number.strip().upper()
     email_addr = email.strip().lower()
     
-    # Matching the designated multi-token verification payload from the spec
     if order_num == "PS-98765" and email_addr == "customer@example.com":
         return {
             "found": True,
@@ -63,7 +62,16 @@ def tool_track_order_status(order_number: str, email: str) -> dict:
             "carrier": "FedEx",
             "tracking_number": "1Z999AA10123456784",
             "estimated_delivery": "Saturday, June 6, 2026",
-            "items": ["PS11752778 (Whirlpool Dishwasher Door Latch Assembly)"]
+            # Injecting a part with a verified video URL so it triggers your custom product card UI!
+            "part": {
+                "partSelectNumber": "PS11752778",
+                "name": "Dishwasher Door Latch Assembly",
+                "category": "dishwasher",
+                "price": 43.15,
+                "inStock": True,
+                "videoUrl": "https://www.youtube.com/watch?v=dtFu8e7MQ-8",
+                "description": "This factory-certified door latch assembly holds the dishwasher door shut during operation to prevent water leaks."
+            }
         }
         
     return {
